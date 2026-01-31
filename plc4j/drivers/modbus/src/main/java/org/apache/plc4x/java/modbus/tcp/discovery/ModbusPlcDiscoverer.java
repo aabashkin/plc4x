@@ -38,6 +38,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -53,6 +54,13 @@ import java.util.stream.Collectors;
 public class ModbusPlcDiscoverer implements PlcDiscoverer {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPlcDiscoverer.class);
+
+    // Modbus TCP ADU maximum size (protocol specification)
+    private static final int MAX_MODBUS_PACKET_SIZE = 260;
+    // Connection timeout for socket operations (milliseconds)
+    private static final int CONNECTION_TIMEOUT_MS = 2000;
+    // Read timeout for socket operations (milliseconds)
+    private static final int READ_TIMEOUT_MS = 1000;
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
@@ -104,7 +112,10 @@ public class ModbusPlcDiscoverer implements PlcDiscoverer {
             try {
                 logger.info("Trying address: {}", possibleAddress);
                 // Try to get a connection to the given host and port.
-                Socket socket = new Socket(possibleAddress.getHostAddress(), Constants.MODBUSTCPDEFAULTPORT);
+                Socket socket = new Socket();
+                // Set connection timeout and read timeout to prevent DoS attacks
+                socket.connect(new InetSocketAddress(possibleAddress.getHostAddress(), Constants.MODBUSTCPDEFAULTPORT), CONNECTION_TIMEOUT_MS);
+                socket.setSoTimeout(READ_TIMEOUT_MS);
 
                 logger.info("Connected: {}", possibleAddress);
 
@@ -166,6 +177,11 @@ public class ModbusPlcDiscoverer implements PlcDiscoverer {
                                 continue;
                             }
                             final short packetLength = (short) (ByteBuffer.wrap(packetLengthBytes).getShort() + 6);
+                            // Validate packet length to prevent DoS attacks
+                            if (packetLength > MAX_MODBUS_PACKET_SIZE || packetLength < 0) {
+                                logger.warn("Invalid packet length {} from {}, skipping", packetLength, possibleAddress);
+                                break;
+                            }
                             if (inputStream.available() >= packetLength) {
                                 responseBytes = new byte[packetLength];
                                 bytesRead = inputStream.read(responseBytes);
