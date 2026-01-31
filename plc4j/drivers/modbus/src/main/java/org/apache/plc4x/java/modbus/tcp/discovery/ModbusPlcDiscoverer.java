@@ -38,6 +38,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -104,7 +105,10 @@ public class ModbusPlcDiscoverer implements PlcDiscoverer {
             try {
                 logger.info("Trying address: {}", possibleAddress);
                 // Try to get a connection to the given host and port.
-                Socket socket = new Socket(possibleAddress.getHostAddress(), Constants.MODBUSTCPDEFAULTPORT);
+                Socket socket = new Socket();
+                // Set connection timeout of 2 seconds and read timeout of 1 second
+                socket.connect(new InetSocketAddress(possibleAddress.getHostAddress(), Constants.MODBUSTCPDEFAULTPORT), 2000);
+                socket.setSoTimeout(1000);
 
                 logger.info("Connected: {}", possibleAddress);
 
@@ -166,6 +170,12 @@ public class ModbusPlcDiscoverer implements PlcDiscoverer {
                                 continue;
                             }
                             final short packetLength = (short) (ByteBuffer.wrap(packetLengthBytes).getShort() + 6);
+                            // Validate packet length to prevent DoS attacks
+                            final int MAX_MODBUS_PACKET_SIZE = 260; // Modbus TCP ADU maximum
+                            if (packetLength > MAX_MODBUS_PACKET_SIZE || packetLength < 0) {
+                                logger.warn("Invalid packet length {} from {}, skipping", packetLength, possibleAddress);
+                                break;
+                            }
                             if (inputStream.available() >= packetLength) {
                                 responseBytes = new byte[packetLength];
                                 bytesRead = inputStream.read(responseBytes);

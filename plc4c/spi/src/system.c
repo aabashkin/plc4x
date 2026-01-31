@@ -261,7 +261,9 @@ plc4c_return_code plc4c_system_create_connection(
   
   // Dont mess up the original connection_string arg, so make a copy and 
   // initialise a new connection, setting the connection string
-  strcpy(connection_string_to_tokenize, connection_string);
+  size_t len = strlen(connection_string);
+  memcpy(connection_string_to_tokenize, connection_string, len);
+  connection_string_to_tokenize[len] = '\0';
   new_connection = malloc(sizeof(plc4c_connection));
   plc4c_connection_initialize(new_connection);
   plc4c_connection_set_connection_string(new_connection, connection_string);

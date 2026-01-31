@@ -39,9 +39,11 @@ void plc4c_connection_initialize(plc4c_connection *new_connection) {
 void plc4c_connection_set_connection_string(plc4c_connection *connection,
                                             char *connection_string) {
   if (connection_string != NULL) {
+    size_t len = strlen(connection_string);
     connection->connection_string =
-        (char *)malloc((strlen(connection_string) + 1) * sizeof(char));
-    strcpy(connection->connection_string, connection_string);
+        (char *)malloc((len + 1) * sizeof(char));
+    memcpy(connection->connection_string, connection_string, len);
+    connection->connection_string[len] = '\0';
   } else {
     connection->connection_string = NULL;
   }
@@ -54,9 +56,11 @@ char *plc4c_connection_get_protocol_code(plc4c_connection *connection) {
 void plc4c_connection_set_protocol_code(plc4c_connection *connection,
                                         char *protocol_code) {
   if (protocol_code != NULL) {
+    size_t len = strlen(protocol_code);
     connection->protocol_code =
-        (char *)malloc((strlen(protocol_code) + 1) * sizeof(char));
-    strcpy(connection->protocol_code, protocol_code);
+        (char *)malloc((len + 1) * sizeof(char));
+    memcpy(connection->protocol_code, protocol_code, len);
+    connection->protocol_code[len] = '\0';
   } else {
     connection->protocol_code = NULL;
   }
@@ -69,9 +73,11 @@ char *plc4c_connection_get_transport_code(plc4c_connection *connection) {
 void plc4c_connection_set_transport_code(plc4c_connection *connection,
                                          char *transport_code) {
   if (transport_code != NULL) {
+    size_t len = strlen(transport_code);
     connection->transport_code =
-        (char *)malloc((strlen(transport_code) + 1) * sizeof(char));
-    strcpy(connection->transport_code, transport_code);
+        (char *)malloc((len + 1) * sizeof(char));
+    memcpy(connection->transport_code, transport_code, len);
+    connection->transport_code[len] = '\0';
   } else {
     connection->transport_code = NULL;
   }
@@ -94,10 +100,12 @@ char *plc4c_connection_get_transport_connect_information(
 void plc4c_connection_set_transport_connect_information(
     plc4c_connection *connection, char *transport_connect_information) {
   if (transport_connect_information != NULL) {
+    size_t len = strlen(transport_connect_information);
     connection->transport_connect_information = (char *)malloc(
-        (strlen(transport_connect_information) + 1) * sizeof(char));
-    strcpy(connection->transport_connect_information,
-           transport_connect_information);
+        (len + 1) * sizeof(char));
+    memcpy(connection->transport_connect_information,
+           transport_connect_information, len);
+    connection->transport_connect_information[len] = '\0';
   } else {
     connection->transport_connect_information = NULL;
   }
@@ -110,9 +118,11 @@ char *plc4c_connection_get_parameters(plc4c_connection *connection) {
 void plc4c_connection_set_parameters(plc4c_connection *connection,
                                      char *parameters) {
   if (parameters != NULL) {
+    size_t len = strlen(parameters);
     connection->parameters =
-        (char *)malloc((strlen(parameters) + 1) * sizeof(char));
-    strcpy(connection->parameters, parameters);
+        (char *)malloc((len + 1) * sizeof(char));
+    memcpy(connection->parameters, parameters, len);
+    connection->parameters[len] = '\0';
   } else {
     connection->parameters = NULL;
   }

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class ProfinetMessageWrapper implements MessageWrapper {
 
@@ -35,7 +35,7 @@ public class ProfinetMessageWrapper implements MessageWrapper {
     public void sendUdpMessage(ProfinetCallable<DceRpc_Packet> callable, ProfinetDeviceContext context, int sourcePort, int destPort) throws RuntimeException {
         try {
             DceRpc_Packet packet = callable.create();
-            Random rand = new Random();
+            SecureRandom rand = new SecureRandom();
             // Serialize it to a byte-payload
             Ethernet_FramePayload_IPv4 udpFrame = new Ethernet_FramePayload_IPv4(
                 rand.nextInt(65536),

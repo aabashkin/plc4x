@@ -26,9 +26,9 @@ import org.apache.plc4x.java.spi.ConversationContext;
 import org.apache.plc4x.java.utils.rawsockets.netty.RawSocketChannel;
 
 import java.net.InetSocketAddress;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 public class PnDcpPacketFactory {
@@ -336,7 +336,7 @@ public class PnDcpPacketFactory {
         InetSocketAddress remoteAddress = (InetSocketAddress) pnChannel.getRemoteAddress();
 
         // Serialize it to a byte-payload
-        Random rand = new Random();
+        SecureRandom rand = new SecureRandom();
         Ethernet_FramePayload_IPv4 udpFrame = new Ethernet_FramePayload_IPv4(
             rand.nextInt(65536),
             true,
@@ -373,7 +373,7 @@ public class PnDcpPacketFactory {
         InetSocketAddress remoteAddress = (InetSocketAddress) pnChannel.getRemoteAddress();
 
         // Serialize it to a byte-payload
-        Random rand = new Random();
+        SecureRandom rand = new SecureRandom();
         Ethernet_FramePayload_IPv4 udpFrame = new Ethernet_FramePayload_IPv4(
             rand.nextInt(65536),
             true,
@@ -410,7 +410,7 @@ public class PnDcpPacketFactory {
         InetSocketAddress remoteAddress = (InetSocketAddress) pnChannel.getRemoteAddress();
 
         // Serialize it to a byte-payload
-        Random rand = new Random();
+        SecureRandom rand = new SecureRandom();
         Ethernet_FramePayload_IPv4 udpFrame = new Ethernet_FramePayload_IPv4(
             rand.nextInt(65536),
             true,
